@@ -58,6 +58,7 @@
 
   /* Part C */
   .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .status + .controls { margin-top: 14px; }
   button {
     font: inherit; cursor: pointer;
     border: 1px solid var(--border);
@@ -193,6 +194,10 @@
         <div class="meta" id="statusMeta"></div>
       </div>
     </div>
+    <div class="controls">
+      <button class="primary" id="changeBtn">Change current status</button>
+      <span class="hint" id="ctlHint"></span>
+    </div>
   </div>
 
   <div class="card">
@@ -200,23 +205,15 @@
     <div class="week" id="week"></div>
   </div>
 
-  <div class="card">
-    <h2>Update Current Status</h2>
-    <div class="controls">
-      <button class="primary" id="changeBtn">Change current status</button>
-      <span class="hint" id="ctlHint"></span>
-    </div>
-
-    <div class="modal-backdrop" id="modal" style="display:none">
-      <div class="modal">
-        <h3>Change current status</h3>
-        <p class="modal-sub" id="modalSub"></p>
-        <div class="modal-actions">
-          <button class="choice choice-on" id="choiceOn">Electricity</button>
-          <button class="choice choice-off" id="choiceOff">No electricity</button>
-        </div>
-        <button class="ghost modal-cancel" id="choiceCancel">Cancel</button>
+  <div class="modal-backdrop" id="modal" style="display:none">
+    <div class="modal">
+      <h3>Change current status</h3>
+      <p class="modal-sub" id="modalSub"></p>
+      <div class="modal-actions">
+        <button class="choice choice-on" id="choiceOn">Electricity</button>
+        <button class="choice choice-off" id="choiceOff">No electricity</button>
       </div>
+      <button class="ghost modal-cancel" id="choiceCancel">Cancel</button>
     </div>
   </div>
 </div>
@@ -433,7 +430,7 @@
     }
 
     if (!ctlHint.textContent) {
-      ctlHint.textContent = "Change the current status to identify today's pattern; the whole week updates.";
+      ctlHint.textContent = "";
     }
   }
 
