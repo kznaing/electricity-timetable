@@ -1,510 +1,678 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Electricity Timetable</title>
-<style>
-  :root {
-    --on: #2ecc71;
-    --on-dark: #1e8f4d;
-    --off: #9aa0a6;
-    --off-dark: #6b7076;
-    --accent: #e74c3c;
-    --bg: #f4f6f8;
-    --card: #ffffff;
-    --border: #e1e5ea;
-    --text: #1c1f23;
-    --muted: #5c636a;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding: 20px;
-  }
-  h1 { font-size: 1.4rem; margin: 0 0 4px; }
-  .sub { color: var(--muted); font-size: .85rem; margin-bottom: 18px; }
-  .wrap { max-width: 1100px; margin: 0 auto; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electricity Timetable</title>
+    <style>
+      :root {
+        --on: #2ecc71;
+        --on-dark: #1e8f4d;
+        --off: #9aa0a6;
+        --off-dark: #6b7076;
+        --accent: #e74c3c;
+        --bg: #f4f6f8;
+        --card: #ffffff;
+        --border: #e1e5ea;
+        --text: #1c1f23;
+        --muted: #5c636a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.4rem;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-bottom: 18px;
+      }
+      .wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
 
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 18px;
-  }
-  .card h2 { font-size: 1rem; margin: 0 0 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 18px;
+      }
+      .card h2 {
+        font-size: 1rem;
+        margin: 0 0 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
 
-  /* Part A */
-  .status {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .status .dot {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--off);
-    box-shadow: 0 0 0 6px rgba(154,160,166,.18);
-  }
-  .status.on .dot { background: var(--on); box-shadow: 0 0 0 6px rgba(46,204,113,.18); }
-  .status .big { font-size: 1.6rem; font-weight: 700; }
-  .status.on .big { color: var(--on-dark); }
-  .status.off .big { color: var(--off-dark); }
-  .status .meta { color: var(--muted); font-size: .9rem; }
+      /* Part A */
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .status .dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--off);
+        box-shadow: 0 0 0 6px rgba(154, 160, 166, 0.18);
+      }
+      .status.on .dot {
+        background: var(--on);
+        box-shadow: 0 0 0 6px rgba(46, 204, 113, 0.18);
+      }
+      .status .big {
+        font-size: 1.6rem;
+        font-weight: 700;
+      }
+      .status.on .big {
+        color: var(--on-dark);
+      }
+      .status.off .big {
+        color: var(--off-dark);
+      }
+      .status .meta {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
 
-  /* Part C */
-  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .status + .controls { margin-top: 14px; }
-  button {
-    font: inherit; cursor: pointer;
-    border: 1px solid var(--border);
-    background: #fff; color: var(--text);
-    padding: 9px 14px; border-radius: 9px;
-    transition: background .15s, border-color .15s;
-  }
-  button:hover { background: #f0f2f5; }
-  button.primary { background: var(--text); color: #fff; border-color: var(--text); }
-  button.primary:hover { background: #000; }
-  button.ghost { color: var(--muted); }
-  .controls .hint { color: var(--muted); font-size: .82rem; }
+      /* Part C */
+      .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .status + .controls {
+        margin-top: 14px;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        padding: 9px 14px;
+        border-radius: 9px;
+        transition:
+          background 0.15s,
+          border-color 0.15s;
+      }
+      button:hover {
+        background: #f0f2f5;
+      }
+      button.primary {
+        background: var(--text);
+        color: #fff;
+        border-color: var(--text);
+      }
+      button.primary:hover {
+        background: #000;
+      }
+      button.ghost {
+        color: var(--muted);
+      }
+      .controls .hint {
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
 
-  /* Part B: weekly calendar (rows = days, columns = time) */
-  .week {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .ruler {
-    display: grid;
-    grid-template-columns: 58px 1fr;
-    gap: 6px;
-    align-items: center;
-    color: var(--muted);
-    font-size: .62rem;
-  }
-  .ruler .ticks { position: relative; height: 14px; }
-  .ruler .tick { position: absolute; white-space: nowrap; }
-  .day {
-    display: grid;
-    grid-template-columns: 58px 1fr;
-    gap: 6px;
-    align-items: stretch;
-  }
-  .day .head {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 2px 4px;
-    border-radius: 8px;
-    background: #f1f3f6;
-    text-align: center;
-  }
-  .day.today .head { background: var(--text); color: #fff; }
-  .day .dow { font-size: .8rem; font-weight: 700; line-height: 1.1; }
-  .day .date { font-size: .66rem; color: var(--muted); }
-  .day.today .date { color: #d7dade; }
+      /* Part B: weekly calendar (rows = days, columns = time) */
+      .week {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .ruler {
+        display: grid;
+        grid-template-columns: 58px 1fr;
+        gap: 6px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 0.62rem;
+      }
+      .ruler .ticks {
+        position: relative;
+        height: 14px;
+      }
+      .ruler .tick {
+        position: absolute;
+        white-space: nowrap;
+      }
+      .day {
+        display: grid;
+        grid-template-columns: 58px 1fr;
+        gap: 6px;
+        align-items: stretch;
+      }
+      .day .head {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 2px 4px;
+        border-radius: 8px;
+        background: #f1f3f6;
+        text-align: center;
+      }
+      .day.today .head {
+        background: var(--text);
+        color: #fff;
+      }
+      .day .dow {
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .day .date {
+        font-size: 0.66rem;
+        color: var(--muted);
+      }
+      .day.today .date {
+        color: #d7dade;
+      }
 
-  .track {
-    position: relative;
-    height: 46px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #eef1f4;
-  }
-  .day.today .track { box-shadow: 0 0 0 2px rgba(28,31,35,.5); }
-  .block {
-    position: absolute;
-    top: 0; bottom: 0;
-    border-right: 1px solid rgba(255,255,255,.4);
-  }
-  .block.on { background: var(--on); }
-  .block.off { background: var(--off); }
+      .track {
+        position: relative;
+        height: 46px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #eef1f4;
+      }
+      .day.today .track {
+        box-shadow: 0 0 0 2px rgba(28, 31, 35, 0.5);
+      }
+      .block {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.4);
+      }
+      .block.on {
+        background: var(--on);
+      }
+      .block.off {
+        background: var(--off);
+      }
 
-  .now {
-    position: absolute;
-    top: -2px; bottom: -2px;
-    width: 3px;
-    background: var(--accent);
-    z-index: 5;
-    transition: left 0.6s linear;
-  }
-  .now::before {
-    content: attr(data-time);
-    position: absolute;
-    left: 50%; top: -15px;
-    transform: translateX(-50%);
-    background: var(--accent);
-    color: #fff;
-    font-size: .6rem;
-    font-weight: 700;
-    padding: 1px 5px;
-    border-radius: 4px;
-    white-space: nowrap;
-  }
+      .now {
+        position: absolute;
+        top: -2px;
+        bottom: -2px;
+        width: 3px;
+        background: var(--accent);
+        z-index: 5;
+        transition: left 0.6s linear;
+      }
+      .now::before {
+        content: attr(data-time);
+        position: absolute;
+        left: 50%;
+        top: -15px;
+        transform: translateX(-50%);
+        background: var(--accent);
+        color: #fff;
+        font-size: 0.6rem;
+        font-weight: 700;
+        padding: 1px 5px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
 
-  .modal-backdrop {
-    position: fixed; inset: 0;
-    background: rgba(20,23,26,.5);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 50; padding: 16px;
-  }
-  .modal {
-    background: #fff; border-radius: 14px;
-    padding: 20px; width: 100%; max-width: 340px;
-    box-shadow: 0 12px 40px rgba(0,0,0,.25);
-  }
-  .modal h3 { margin: 0 0 6px; font-size: 1.05rem; }
-  .modal-sub { color: var(--muted); font-size: .85rem; margin: 0 0 16px; }
-  .modal-actions { display: flex; gap: 10px; }
-  .choice {
-    flex: 1; padding: 14px 10px; border-radius: 10px;
-    font-weight: 700; border: 1px solid var(--border); background: #fff;
-  }
-  .choice-on { background: var(--on); color: #fff; border-color: var(--on); }
-  .choice-on:hover { background: var(--on-dark); }
-  .choice-off { background: var(--off); color: #fff; border-color: var(--off); }
-  .choice-off:hover { background: var(--off-dark); }
-  .modal-cancel { width: 100%; margin-top: 10px; }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(20, 23, 26, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 16px;
+      }
+      .modal {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        width: 100%;
+        max-width: 340px;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+      }
+      .modal h3 {
+        margin: 0 0 6px;
+        font-size: 1.05rem;
+      }
+      .modal-sub {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin: 0 0 16px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .choice {
+        flex: 1;
+        padding: 14px 10px;
+        border-radius: 10px;
+        font-weight: 700;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+      .choice-on {
+        background: var(--on);
+        color: #fff;
+        border-color: var(--on);
+      }
+      .choice-on:hover {
+        background: var(--on-dark);
+      }
+      .choice-off {
+        background: var(--off);
+        color: #fff;
+        border-color: var(--off);
+      }
+      .choice-off:hover {
+        background: var(--off-dark);
+      }
+      .modal-cancel {
+        width: 100%;
+        margin-top: 10px;
+      }
 
-  @media (max-width: 520px) {
-    .ruler, .day { grid-template-columns: 46px 1fr; }
-    .ruler { font-size: .55rem; }
-    .day .dow { font-size: .72rem; }
-    .day .date { font-size: .6rem; }
-    body { padding: 12px; }
-    .card { padding: 12px; }
-  }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <h1>Electricity Timetable</h1>
-  <div class="sub" id="subtitle"></div>
+      @media (max-width: 520px) {
+        .ruler,
+        .day {
+          grid-template-columns: 46px 1fr;
+        }
+        .ruler {
+          font-size: 0.55rem;
+        }
+        .day .dow {
+          font-size: 0.72rem;
+        }
+        .day .date {
+          font-size: 0.6rem;
+        }
+        body {
+          padding: 12px;
+        }
+        .card {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>မီးပျက်မီးလာ အချိန်ဇယား</h1>
+      <div class="sub" id="subtitle"></div>
 
-  <div class="card">
-    <h2>Current Status</h2>
-    <div class="status off" id="statusBox">
-      <div class="dot"></div>
-      <div>
-        <div class="big" id="statusText">—</div>
-        <div class="meta" id="statusMeta"></div>
+      <div class="card">
+        <h2>လက်ရှိအခြေအနေ</h2>
+        <div class="status off" id="statusBox">
+          <div class="dot"></div>
+          <div>
+            <div class="big" id="statusText">—</div>
+            <div class="meta" id="statusMeta"></div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="primary" id="changeBtn">ပြောင်းလဲမည်</button>
+          <span class="hint" id="ctlHint"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>တစ်ပတ်စာ အချိန်ဇယား</h2>
+        <div class="week" id="week"></div>
+      </div>
+
+      <div class="modal-backdrop" id="modal" style="display: none">
+        <div class="modal">
+          <h3>လက်ရှိအခြေအနေ</h3>
+          <p class="modal-sub" id="modalSub"></p>
+          <div class="modal-actions">
+            <button class="choice choice-on" id="choiceOn">မီးလာနေသည်</button>
+            <button class="choice choice-off" id="choiceOff">မီးပျက်နေသည်</button>
+          </div>
+          <button class="ghost modal-cancel" id="choiceCancel">မလုပ်တော့ပါ</button>
+        </div>
       </div>
     </div>
-    <div class="controls">
-      <button class="primary" id="changeBtn">Change current status</button>
-      <span class="hint" id="ctlHint"></span>
-    </div>
-  </div>
 
-  <div class="card">
-    <h2>Weekly Calendar</h2>
-    <div class="week" id="week"></div>
-  </div>
+    <script>
+      (function () {
+        "use strict";
 
-  <div class="modal-backdrop" id="modal" style="display:none">
-    <div class="modal">
-      <h3>Change current status</h3>
-      <p class="modal-sub" id="modalSub"></p>
-      <div class="modal-actions">
-        <button class="choice choice-on" id="choiceOn">Electricity</button>
-        <button class="choice choice-off" id="choiceOff">No electricity</button>
-      </div>
-      <button class="ghost modal-cancel" id="choiceCancel">Cancel</button>
-    </div>
-  </div>
-</div>
+        var STORE_ANCHOR = "timetable.anchor";
+        var EPOCH = Date.UTC(2000, 0, 1);
+        var DAY_MS = 86400000;
 
-<script>
-(function () {
-  "use strict";
+        // ---- schedule definition -------------------------------------------------
+        // 5 blocks per day, [startHour, endHour]. endHour may exceed 24 to represent
+        // hours of the following day (e.g. 29 = 5:00 next day).
+        var BLOCKS = [
+          { start: 5, end: 9, label: "5:00–9:00" },
+          { start: 9, end: 13, label: "9:00–13:00" },
+          { start: 13, end: 17, label: "13:00–17:00" },
+          { start: 17, end: 21, label: "17:00–21:00" },
+          { start: 21, end: 29, label: "21:00–5:00" },
+        ];
+        var DAY1 = [false, true, false, true, true]; // Day 1 pattern
+        var DAY2 = [true, false, true, false, true]; // Day 2 pattern
+        var LAST_IDX = BLOCKS.length - 1; // 21:00–5:00 block
 
-  var STORE_ANCHOR = "timetable.anchor";
-  var EPOCH = Date.UTC(2000, 0, 1);
-  var DAY_MS = 86400000;
+        function patternFor(dayNumber) {
+          var anchor = getAnchor();
+          var p = (((dayNumber - anchor) % 2) + 2) % 2; // 0 = Day 1, 1 = Day 2
+          return p;
+        }
+        function blocksFor(dayNumber) {
+          return patternFor(dayNumber) === 0 ? DAY1 : DAY2;
+        }
 
-  // ---- schedule definition -------------------------------------------------
-  // 5 blocks per day, [startHour, endHour]. endHour may exceed 24 to represent
-  // hours of the following day (e.g. 29 = 5:00 next day).
-  var BLOCKS = [
-    { start: 5,  end: 9,          label: "5:00–9:00" },
-    { start: 9,  end: 13,         label: "9:00–13:00" },
-    { start: 13, end: 17,         label: "13:00–17:00" },
-    { start: 17, end: 21,         label: "17:00–21:00" },
-    { start: 21, end: 29,         label: "21:00–5:00" }
-  ];
-  var DAY1 = [false, true, false, true, true];    // Day 1 pattern
-  var DAY2 = [true, false, true, false, true];    // Day 2 pattern
-  var LAST_IDX = BLOCKS.length - 1;               // 21:00–5:00 block
+        // ---- storage -------------------------------------------------------------
+        function getAnchor() {
+          var v = localStorage.getItem(STORE_ANCHOR);
+          return v === null ? 0 : parseInt(v, 10);
+        }
+        function setAnchor(v) {
+          localStorage.setItem(STORE_ANCHOR, String(v));
+        }
 
-  function patternFor(dayNumber) {
-    var anchor = getAnchor();
-    var p = ((dayNumber - anchor) % 2 + 2) % 2;  // 0 = Day 1, 1 = Day 2
-    return p;
-  }
-  function blocksFor(dayNumber) {
-    return patternFor(dayNumber) === 0 ? DAY1 : DAY2;
-  }
+        // ---- date helpers --------------------------------------------------------
+        function dayNumberOf(d) {
+          return Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - EPOCH) / DAY_MS);
+        }
+        function addDays(d, n) {
+          var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+          x.setDate(x.getDate() + n);
+          return x;
+        }
+        function fmtTime(hour, min) {
+          var h = Math.floor(hour),
+            m = min || 0;
+          return h + ":" + ("0" + m).slice(-2);
+        }
+        function fmtHour12(h) {
+          var suffix = h < 12 || h === 24 ? "AM" : "PM";
+          var h12 = h % 12;
+          if (h12 === 0) h12 = 12;
+          return h12 + " " + suffix;
+        }
+        function wrapHour(h) {
+          return ((h % 24) + 24) % 24;
+        }
 
-  // ---- storage -------------------------------------------------------------
-  function getAnchor() {
-    var v = localStorage.getItem(STORE_ANCHOR);
-    return v === null ? 0 : parseInt(v, 10);
-  }
-  function setAnchor(v) { localStorage.setItem(STORE_ANCHOR, String(v)); }
+        // ---- status resolution ---------------------------------------------------
+        // Returns {on: bool} for a given date + block index.
+        function resolveBlock(dayNumber, idx) {
+          return { on: blocksFor(dayNumber)[idx] };
+        }
 
-  // ---- date helpers --------------------------------------------------------
-  function dayNumberOf(d) {
-    return Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - EPOCH) / DAY_MS);
-  }
-  function addDays(d, n) {
-    var x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    x.setDate(x.getDate() + n);
-    return x;
-  }
-  function fmtTime(hour, min) {
-    var h = Math.floor(hour), m = min || 0;
-    return h + ":" + ("0" + m).slice(-2);
-  }
-  function fmtHour12(h) {
-    var suffix = h < 12 || h === 24 ? "AM" : "PM";
-    var h12 = h % 12;
-    if (h12 === 0) h12 = 12;
-    return h12 + " " + suffix;
-  }
-  function wrapHour(h) { return ((h % 24) + 24) % 24; }
+        // Find which (dayNumber, blockIndex) covers "now". Handles the carry of the
+        // previous day's 21:00–5:00 block into 00:00–5:00 of the current day.
+        function currentBlock(now) {
+          var dayNumber = dayNumberOf(now);
+          var minutes = now.getHours() * 60 + now.getMinutes();
+          // 00:00–5:00 belongs to previous day's last block.
+          if (minutes < 5 * 60) {
+            var r = resolveBlock(dayNumber - 1, LAST_IDX);
+            return {
+              dayNumber: dayNumber - 1,
+              idx: LAST_IDX,
+              on: r.on,
+              startMin: -1440 + 21 * 60,
+              endMin: -1440 + 29 * 60,
+              nowMin: minutes,
+            };
+          }
+          for (var i = 0; i < BLOCKS.length; i++) {
+            var b = BLOCKS[i];
+            var s = b.start * 60,
+              e = b.end * 60;
+            if (minutes >= s && minutes < e) {
+              var rr = resolveBlock(dayNumber, i);
+              return { dayNumber: dayNumber, idx: i, on: rr.on, startMin: s, endMin: e, nowMin: minutes };
+            }
+          }
+          // fallback (should not happen)
+          return { dayNumber: dayNumber, idx: 0, on: false, startMin: 0, endMin: 60, nowMin: minutes };
+        }
 
-  // ---- status resolution ---------------------------------------------------
-  // Returns {on: bool} for a given date + block index.
-  function resolveBlock(dayNumber, idx) {
-    return { on: blocksFor(dayNumber)[idx] };
-  }
+        // Status of a sub-range within a specific day column, accounting for the
+        // 21:00–5:00 split: [startMinute, endMinute] in 0..1440 of that day.
+        function columnSegments(dayNumber) {
+          // For each block, produce the piece visible inside this day's column.
+          var segs = [];
+          for (var i = 0; i < BLOCKS.length; i++) {
+            var b = BLOCKS[i];
+            var s = b.start * 60;
+            var e = b.end * 60;
+            if (s >= 1440) continue; // not in this column
+            var visEnd = Math.min(e, 1440);
+            segs.push({
+              idx: i,
+              topPct: (s / 1440) * 100,
+              heightPct: ((visEnd - s) / 1440) * 100,
+              label: b.label,
+              on: resolveBlock(dayNumber, i).on,
+              spills: e > 1440,
+              carried: false,
+            });
+          }
+          // Carried tail: previous day's 21:00–5:00 shows as 0:00–5:00 in this column.
+          var prev = resolveBlock(dayNumber - 1, LAST_IDX);
+          segs.unshift({
+            idx: LAST_IDX,
+            topPct: 0,
+            heightPct: (300 / 1440) * 100,
+            label: "0:00–5:00",
+            on: prev.on,
+            spills: false,
+            carried: true,
+          });
+          return segs;
+        }
 
-  // Find which (dayNumber, blockIndex) covers "now". Handles the carry of the
-  // previous day's 21:00–5:00 block into 00:00–5:00 of the current day.
-  function currentBlock(now) {
-    var dayNumber = dayNumberOf(now);
-    var minutes = now.getHours() * 60 + now.getMinutes();
-    // 00:00–5:00 belongs to previous day's last block.
-    if (minutes < 5 * 60) {
-      var r = resolveBlock(dayNumber - 1, LAST_IDX);
-      return { dayNumber: dayNumber - 1, idx: LAST_IDX, on: r.on,
-               startMin: -1440 + 21 * 60, endMin: -1440 + 29 * 60, nowMin: minutes };
-    }
-    for (var i = 0; i < BLOCKS.length; i++) {
-      var b = BLOCKS[i];
-      var s = b.start * 60, e = b.end * 60;
-      if (minutes >= s && minutes < e) {
-        var rr = resolveBlock(dayNumber, i);
-        return { dayNumber: dayNumber, idx: i, on: rr.on,
-                 startMin: s, endMin: e, nowMin: minutes };
-      }
-    }
-    // fallback (should not happen)
-    return { dayNumber: dayNumber, idx: 0, on: false,
-             startMin: 0, endMin: 60, nowMin: minutes };
-  }
+        // ---- rendering -----------------------------------------------------------
+        var weekEl = document.getElementById("week");
+        var statusBox = document.getElementById("statusBox");
+        var statusText = document.getElementById("statusText");
+        var statusMeta = document.getElementById("statusMeta");
+        var subtitle = document.getElementById("subtitle");
+        var ctlHint = document.getElementById("ctlHint");
 
-  // Status of a sub-range within a specific day column, accounting for the
-  // 21:00–5:00 split: [startMinute, endMinute] in 0..1440 of that day.
-  function columnSegments(dayNumber) {
-    // For each block, produce the piece visible inside this day's column.
-    var segs = [];
-    for (var i = 0; i < BLOCKS.length; i++) {
-      var b = BLOCKS[i];
-      var s = b.start * 60;
-      var e = b.end * 60;
-      if (s >= 1440) continue;            // not in this column
-      var visEnd = Math.min(e, 1440);
-      segs.push({
-        idx: i,
-        topPct: (s / 1440) * 100,
-        heightPct: ((visEnd - s) / 1440) * 100,
-        label: b.label,
-        on: resolveBlock(dayNumber, i).on,
-        spills: e > 1440,
-        carried: false
-      });
-    }
-    // Carried tail: previous day's 21:00–5:00 shows as 0:00–5:00 in this column.
-    var prev = resolveBlock(dayNumber - 1, LAST_IDX);
-    segs.unshift({
-      idx: LAST_IDX,
-      topPct: 0,
-      heightPct: (300 / 1440) * 100,
-      label: "0:00–5:00",
-      on: prev.on,
-      spills: false,
-      carried: true
-    });
-    return segs;
-  }
+        function render() {
+          var now = new Date();
+          var todayNum = dayNumberOf(now);
+          var cur = currentBlock(now);
 
-  // ---- rendering -----------------------------------------------------------
-  var weekEl = document.getElementById("week");
-  var statusBox = document.getElementById("statusBox");
-  var statusText = document.getElementById("statusText");
-  var statusMeta = document.getElementById("statusMeta");
-  var subtitle = document.getElementById("subtitle");
-  var ctlHint = document.getElementById("ctlHint");
+          // subtitle
+          subtitle.textContent =
+            "လက်ရှိအချိန်: " + now.toDateString() + " " + fmtTime(now.getHours(), now.getMinutes());
 
-  function render() {
-    var now = new Date();
-    var todayNum = dayNumberOf(now);
-    var cur = currentBlock(now);
+          // status banner
+          statusBox.className = "status " + (cur.on ? "on" : "off");
+          statusText.textContent = cur.on ? "မီးလာနေပါသည်" : "မီးပျက်နေပါသည်";
+          var remainMin = cur.endMin - cur.nowMin;
+          var rh = Math.floor(remainMin / 60),
+            rm = remainMin % 60;
+          statusMeta.textContent =
+            "လက်ရှိအပိုင်းအခြား " +
+            fmtTime(wrapHour(Math.floor(cur.startMin / 60)), 0) +
+            "–" +
+            fmtTime(wrapHour(Math.floor(cur.endMin / 60)), 0) +
+            " · " +
+            (remainMin > 0 ? (rh > 0 ? rh + "h " : "") + rm + "m ကျန်ရှိသည်" : "ending");
 
-    // subtitle
-    subtitle.textContent = "Now: " + now.toDateString() + " " +
-      fmtTime(now.getHours(), now.getMinutes());
+          // week rows (one per day, horizontal 24h timeline)
+          weekEl.innerHTML = "";
 
-    // status banner
-    statusBox.className = "status " + (cur.on ? "on" : "off");
-    statusText.textContent = cur.on ? "Electricity ON" : "Electricity OFF";
-    var remainMin = cur.endMin - cur.nowMin;
-    var rh = Math.floor(remainMin / 60), rm = remainMin % 60;
-    statusMeta.textContent = "Current block " + fmtTime(wrapHour(Math.floor(cur.startMin / 60)), 0) +
-      "–" + fmtTime(wrapHour(Math.floor(cur.endMin / 60)), 0) +
-      " · " + (remainMin > 0
-        ? (rh > 0 ? rh + "h " : "") + rm + "m left"
-        : "ending");
+          var ruler = document.createElement("div");
+          ruler.className = "ruler";
+          var ticks = document.createElement("div");
+          ticks.className = "ticks";
+          [5, 9, 13, 17, 21].forEach(function (h) {
+            var t = document.createElement("span");
+            t.className = "tick";
+            t.textContent = fmtHour12(h);
+            t.style.left = (h / 24) * 100 + "%";
+            t.style.transform = "translateX(-50%)";
+            ticks.appendChild(t);
+          });
+          ruler.innerHTML = "<div></div>";
+          ruler.appendChild(ticks);
+          weekEl.appendChild(ruler);
 
-    // week rows (one per day, horizontal 24h timeline)
-    weekEl.innerHTML = "";
+          for (var i = 0; i < 7; i++) {
+            var d = addDays(now, i);
+            var dn = dayNumberOf(d);
+            var isToday = dn === todayNum;
 
-    var ruler = document.createElement("div");
-    ruler.className = "ruler";
-    var ticks = document.createElement("div");
-    ticks.className = "ticks";
-    [5, 9, 13, 17, 21].forEach(function (h) {
-      var t = document.createElement("span");
-      t.className = "tick";
-      t.textContent = fmtHour12(h);
-      t.style.left = (h / 24 * 100) + "%";
-      t.style.transform = "translateX(-50%)";
-      ticks.appendChild(t);
-    });
-    ruler.innerHTML = '<div></div>';
-    ruler.appendChild(ticks);
-    weekEl.appendChild(ruler);
+            var row = document.createElement("div");
+            row.className = "day" + (isToday ? " today" : "");
 
-    for (var i = 0; i < 7; i++) {
-      var d = addDays(now, i);
-      var dn = dayNumberOf(d);
-      var isToday = dn === todayNum;
+            var head = document.createElement("div");
+            head.className = "head";
+            head.innerHTML =
+              '<div class="dow">' +
+              d.toLocaleDateString(undefined, { weekday: "short" }) +
+              "</div>" +
+              '<div class="date">' +
+              d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+              "</div>";
+            row.appendChild(head);
 
-      var row = document.createElement("div");
-      row.className = "day" + (isToday ? " today" : "");
+            var track = document.createElement("div");
+            track.className = "track";
 
-      var head = document.createElement("div");
-      head.className = "head";
-      head.innerHTML =
-        '<div class="dow">' + d.toLocaleDateString(undefined, { weekday: "short" }) + '</div>' +
-        '<div class="date">' + d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + '</div>';
-      row.appendChild(head);
+            var segs = columnSegments(dn);
+            segs.forEach(function (s) {
+              var el = document.createElement("div");
+              el.className = "block " + (s.on ? "on" : "off");
+              el.style.left = s.topPct + "%";
+              el.style.width = s.heightPct + "%";
+              el.title = s.label + " — " + (s.on ? "electricity" : "no power");
+              track.appendChild(el);
+            });
 
-      var track = document.createElement("div");
-      track.className = "track";
+            if (isToday) {
+              var nowBar = document.createElement("div");
+              nowBar.className = "now";
+              nowBar.dataset.time = fmtTime(now.getHours(), now.getMinutes());
+              nowBar.style.left = ((now.getHours() * 60 + now.getMinutes()) / 1440) * 100 + "%";
+              track.appendChild(nowBar);
+            }
+            row.appendChild(track);
+            weekEl.appendChild(row);
+          }
 
-      var segs = columnSegments(dn);
-      segs.forEach(function (s) {
-        var el = document.createElement("div");
-        el.className = "block " + (s.on ? "on" : "off");
-        el.style.left = s.topPct + "%";
-        el.style.width = s.heightPct + "%";
-        el.title = s.label + " — " + (s.on ? "electricity" : "no power");
-        track.appendChild(el);
-      });
+          if (!ctlHint.textContent) {
+            ctlHint.textContent = "";
+          }
+        }
 
-      if (isToday) {
-        var nowBar = document.createElement("div");
-        nowBar.className = "now";
-        nowBar.dataset.time = fmtTime(now.getHours(), now.getMinutes());
-        nowBar.style.left = ((now.getHours() * 60 + now.getMinutes()) / 1440 * 100) + "%";
-        track.appendChild(nowBar);
-      }
-      row.appendChild(track);
-      weekEl.appendChild(row);
-    }
+        // ---- controls ------------------------------------------------------------
+        var modal = document.getElementById("modal");
+        var modalSub = document.getElementById("modalSub");
 
-    if (!ctlHint.textContent) {
-      ctlHint.textContent = "";
-    }
-  }
+        // Which (dayNumber, blockIndex) is the current block. 00:00–5:00 belongs to
+        // the previous day's last block.
+        function currentTarget(now) {
+          var dayNumber = dayNumberOf(now);
+          var minutes = now.getHours() * 60 + now.getMinutes();
+          if (minutes < 5 * 60) return { day: dayNumber - 1, idx: LAST_IDX };
+          for (var i = 0; i < BLOCKS.length; i++) {
+            if (minutes >= BLOCKS[i].start * 60 && minutes < BLOCKS[i].end * 60) {
+              return { day: dayNumber, idx: i };
+            }
+          }
+          return { day: dayNumber, idx: 0 };
+        }
 
-  // ---- controls ------------------------------------------------------------
-  var modal = document.getElementById("modal");
-  var modalSub = document.getElementById("modalSub");
+        // The observed power state identifies whether today is Day 1 or Day 2, and the
+        // recurring pattern is re-anchored so the whole timetable updates. The last
+        // block (21:00–5:00) is ON in both patterns, so it cannot identify the day —
+        // in that case we do nothing.
+        function identifyDay(on) {
+          var now = new Date();
+          var t = currentTarget(now);
+          var dayIdx = t.idx;
 
-  // Which (dayNumber, blockIndex) is the current block. 00:00–5:00 belongs to
-  // the previous day's last block.
-  function currentTarget(now) {
-    var dayNumber = dayNumberOf(now);
-    var minutes = now.getHours() * 60 + now.getMinutes();
-    if (minutes < 5 * 60) return { day: dayNumber - 1, idx: LAST_IDX };
-    for (var i = 0; i < BLOCKS.length; i++) {
-      if (minutes >= BLOCKS[i].start * 60 && minutes < BLOCKS[i].end * 60) {
-        return { day: dayNumber, idx: i };
-      }
-    }
-    return { day: dayNumber, idx: 0 };
-  }
+          var candidates = [];
+          if (DAY1[dayIdx] === on) candidates.push(0);
+          if (DAY2[dayIdx] === on) candidates.push(1);
 
-  // The observed power state identifies whether today is Day 1 or Day 2, and the
-  // recurring pattern is re-anchored so the whole timetable updates. The last
-  // block (21:00–5:00) is ON in both patterns, so it cannot identify the day —
-  // in that case we do nothing.
-  function identifyDay(on) {
-    var now = new Date();
-    var t = currentTarget(now);
-    var dayIdx = t.idx;
+          if (candidates.length !== 1) {
+            closeModal();
+            ctlHint.textContent = "Can't determine the day from this block — try during a 4-hour block before 21:00.";
+            return;
+          }
 
-    var candidates = [];
-    if (DAY1[dayIdx] === on) candidates.push(0);
-    if (DAY2[dayIdx] === on) candidates.push(1);
+          var day = candidates[0]; // 0 = Day 1, 1 = Day 2
+          var nowDayNum = dayNumberOf(now);
+          var anchor = (((nowDayNum - day) % 2) + 2) % 2;
+          setAnchor(anchor);
+          closeModal();
+          ctlHint.textContent = "Today identified as Day " + (day === 0 ? "1" : "2") + ".";
+          render();
+        }
 
-    if (candidates.length !== 1) {
-      closeModal();
-      ctlHint.textContent = "Can't determine the day from this block — try during a 4-hour block before 21:00.";
-      return;
-    }
+        function openModal() {
+          var now = new Date();
+          var t = currentTarget(now);
+          var b = BLOCKS[t.idx];
+          modalSub.textContent =
+            "Block " + b.label + ". Is electricity available now? This identifies today's pattern.";
+          modal.style.display = "flex";
+        }
+        function closeModal() {
+          modal.style.display = "none";
+        }
 
-    var day = candidates[0];                       // 0 = Day 1, 1 = Day 2
-    var nowDayNum = dayNumberOf(now);
-    var anchor = ((nowDayNum - day) % 2 + 2) % 2;
-    setAnchor(anchor);
-    closeModal();
-    ctlHint.textContent = "Today identified as Day " + (day === 0 ? "1" : "2") + ".";
-    render();
-  }
+        document.getElementById("changeBtn").addEventListener("click", openModal);
+        document.getElementById("choiceOn").addEventListener("click", function () {
+          identifyDay(true);
+        });
+        document.getElementById("choiceOff").addEventListener("click", function () {
+          identifyDay(false);
+        });
+        document.getElementById("choiceCancel").addEventListener("click", closeModal);
+        modal.addEventListener("click", function (e) {
+          if (e.target === modal) closeModal();
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closeModal();
+        });
 
-  function openModal() {
-    var now = new Date();
-    var t = currentTarget(now);
-    var b = BLOCKS[t.idx];
-    modalSub.textContent = "Block " + b.label +
-      ". Is electricity available now? This identifies today's pattern.";
-    modal.style.display = "flex";
-  }
-  function closeModal() { modal.style.display = "none"; }
-
-  document.getElementById("changeBtn").addEventListener("click", openModal);
-  document.getElementById("choiceOn").addEventListener("click", function () { identifyDay(true); });
-  document.getElementById("choiceOff").addEventListener("click", function () { identifyDay(false); });
-  document.getElementById("choiceCancel").addEventListener("click", closeModal);
-  modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModal(); });
-
-  // ---- refresh loop --------------------------------------------------------
-  render();
-  setInterval(render, 60 * 1000);
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) render();
-  });
-  window.addEventListener("focus", render);
-})();
-</script>
-</body>
+        // ---- refresh loop --------------------------------------------------------
+        render();
+        setInterval(render, 60 * 1000);
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) render();
+        });
+        window.addEventListener("focus", render);
+      })();
+    </script>
+  </body>
 </html>
