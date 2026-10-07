@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Electricity Timetable</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#1c1f23" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="မီးအချိန်ဇယား" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
     <style>
       :root {
         --on: #2ecc71;
@@ -357,6 +365,16 @@
           <button class="ghost modal-cancel" id="choiceCancel">မလုပ်တော့ပါ</button>
         </div>
       </div>
+      <div class="modal-backdrop" id="installModal" style="display: none">
+        <div class="modal">
+          <h3>အက်ပ်အဖြစ် သွင်းမလား?</h3>
+          <p class="modal-sub">အော့ဖ်လိုင်းတွင်လည်း အသုံးပြုနိုင်ရန် ဤအက်ပ်ကို သင့်စက်ပစ္စည်းတွင် သွင်းထားနိုင်သည်။</p>
+          <div class="modal-actions">
+            <button class="choice choice-on" id="installAccept">သွင်းမည်</button>
+            <button class="choice choice-off" id="installDismiss">နောက်မှ</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -672,6 +690,47 @@
           if (!document.hidden) render();
         });
         window.addEventListener("focus", render);
+
+        // ---- PWA: offline + install prompt --------------------------------------
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", function () {
+            navigator.serviceWorker.register("./sw.js").catch(function () {});
+          });
+        }
+
+        var installModal = document.getElementById("installModal");
+        var deferredPrompt = null;
+
+        window.addEventListener("beforeinstallprompt", function (e) {
+          e.preventDefault();
+          deferredPrompt = e;
+          if (!localStorage.getItem("timetable.installDismissed")) {
+            installModal.style.display = "flex";
+          }
+        });
+
+        document.getElementById("installAccept").addEventListener("click", function () {
+          installModal.style.display = "none";
+          if (!deferredPrompt) return;
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.finally(function () {
+            deferredPrompt = null;
+          });
+        });
+
+        document.getElementById("installDismiss").addEventListener("click", function () {
+          installModal.style.display = "none";
+          localStorage.setItem("timetable.installDismissed", "1");
+        });
+
+        installModal.addEventListener("click", function (e) {
+          if (e.target === installModal) installModal.style.display = "none";
+        });
+
+        window.addEventListener("appinstalled", function () {
+          installModal.style.display = "none";
+          deferredPrompt = null;
+        });
       })();
     </script>
   </body>
